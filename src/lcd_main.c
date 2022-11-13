@@ -45,6 +45,8 @@ uint8_t msg2[] = {SB1602_DATA_BURST, 0xBC, 0xAE, 0xCE, 0xDE, '-', 0xDD};
 
 uint32_t count = 0;
 
+uint8_t button_counter = 0;
+
 //*****************************************************************************
 //
 // This function sets up UART0 to be used for a console to display information
@@ -98,6 +100,20 @@ void SysTickIntHandler(void) {
     static uint32_t face = 0;
     static uint32_t tick_count = 0;
     uint8_t command[16];
+    if (!GPIOPinRead(GPIO_PORTF_BASE,GPIO_PIN_4)){
+        button_counter++;
+        if (button_counter >= 32){
+            button_counter = 0;
+            count = 0;
+            clearLCD();
+            delay_ms(5);
+            uint8_t buff = 48;
+            setAddressLCD(15, 0);
+            writeTextLCD(&buff, 1);
+        }
+    } else{
+        button_counter = 0;
+    }
     if (tick_count % 16 == 0) {
         led_color = ~led_color;
         GPIOPinWrite(GPIO_PORTF_BASE, LED_GREEN, led_color);
@@ -187,6 +203,8 @@ int main(void) {
     SysTickIntRegister(SysTickIntHandler);
     SysTickIntEnable();
 
+    clearLCD();
+    delay_ms(5);
     uint8_t buff = 48;
     setAddressLCD(15, 0);
     writeTextLCD(&buff, 1);
