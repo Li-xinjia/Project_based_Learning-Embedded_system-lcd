@@ -43,7 +43,7 @@ uint8_t face2[] = {SB1602_DATA_BURST, '(', 0xF4, 0xA5, 'w', 0xA5, 0xF3, ')'};
 uint8_t msg1[] = {SB1602_DATA_BURST, 0xBC, 0xAC, 0xB7, 0xB0, 0xDD, '!'};
 uint8_t msg2[] = {SB1602_DATA_BURST, 0xBC, 0xAE, 0xCE, 0xDE, '-', 0xDD};
 
-uint8_t msg_hello[] = {'H','e','l','l','o'};
+uint32_t count = 0;
 
 //*****************************************************************************
 //
@@ -69,11 +69,29 @@ void initConsole(void) {
 }
 
 void initInterruptPins(void) {
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
+    GPIODirModeSet(GPIO_PORTF_BASE, INT_LEFT_BUTTON, GPIO_DIR_MODE_IN);
+    GPIOPadConfigSet(GPIO_PORTF_BASE, INT_LEFT_BUTTON,
+                     GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
+    GPIOIntClear(GPIO_PORTF_BASE, INT_LEFT_BUTTON);
+
+    GPIOIntRegister(GPIO_PORTF_BASE, SW1PinIntHandler);
+    GPIOIntTypeSet(GPIO_PORTF_BASE, INT_LEFT_BUTTON,
+                   GPIO_FALLING_EDGE);
+    GPIOIntEnable(GPIO_PORTF_BASE, INT_LEFT_BUTTON);
 }
 
 //*****************************************************************************
 // Event handers
 //*****************************************************************************
+
+uint32_t power(uint32_t a, uint8_t b) {
+    int r = 1;
+    for (int i = 0; i < b; ++i) {
+        r *= a;
+    }
+    return r;
+}
 
 void SysTickIntHandler(void) {
     static uint32_t led_color = LED_ALL;
@@ -102,14 +120,44 @@ void SysTickIntHandler(void) {
 //                writeDataI2C(I2C3_BASE, SB1602_SLAVE_ADDRESS, msg2, 7);
 //            }
 //            face = 1 - face;
-            setAddressLCD(0,0);
-            writeTextLCD(msg_hello,5);
+//            setAddressLCD(0, 0);
+//            writeTextLCD(msg_hello, 5);
         }
     }
     tick_count++;
 }
 
 void SW1PinIntHandler(void) {
+    GPIOIntDisable(GPIO_PORTF_BASE, INT_LEFT_BUTTON);
+    GPIOIntClear(GPIO_PORTF_BASE, INT_LEFT_BUTTON);
+
+    count++;
+
+    uint8_t x = 15;
+    uint32_t buff = 0;
+    uint8_t buff_8 = 0;
+
+    buff_8 = count % 10 + 48;
+
+    setAddressLCD(x, 0);
+    writeTextLCD(&buff_8, 1);
+    x--;
+
+    while (x >= 0 && count / power(10, 15 - x) > 0) {
+        buff = count / power(10, 15 - x);
+        if (buff > 9) {
+            buff = buff % 10 + 48;
+        } else {
+            buff = buff + 48;
+        }
+        setAddressLCD(x, 0);
+        buff_8 = buff;
+        writeTextLCD(&buff_8, 1);
+        x--;
+    }
+
+    UARTprintf("SW1 pushed\n");
+    GPIOIntEnable(GPIO_PORTF_BASE, INT_LEFT_BUTTON);
 }
 
 int main(void) {
@@ -138,6 +186,10 @@ int main(void) {
     SysTickEnable();
     SysTickIntRegister(SysTickIntHandler);
     SysTickIntEnable();
+
+    uint8_t buff = 48;
+    setAddressLCD(15, 0);
+    writeTextLCD(&buff, 1);
 
     while (1);
 }
