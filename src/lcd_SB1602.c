@@ -38,7 +38,7 @@ inline void commandLCD(uint8_t cmd) {
 // set address LCD
 //*****************************************************************************
 inline void setAddressLCD(uint8_t x, uint8_t y) {
-    if (x > 1 || y > 63) return;
+    if (x > 63 || y > 1) return;
     uint8_t command[] = {SB1602_COMMAND_SINGLE, 0x80 | (y * 0x40 + x)};
     writeDataI2C(I2C3_BASE, SB1602_SLAVE_ADDRESS, command, 2);
 }
