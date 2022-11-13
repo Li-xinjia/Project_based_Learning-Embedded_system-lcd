@@ -43,6 +43,8 @@ uint8_t face2[] = {SB1602_DATA_BURST, '(', 0xF4, 0xA5, 'w', 0xA5, 0xF3, ')'};
 uint8_t msg1[] = {SB1602_DATA_BURST, 0xBC, 0xAC, 0xB7, 0xB0, 0xDD, '!'};
 uint8_t msg2[] = {SB1602_DATA_BURST, 0xBC, 0xAE, 0xCE, 0xDE, '-', 0xDD};
 
+uint8_t msg_hello[] = {'H','e','l','l','o'};
+
 //*****************************************************************************
 //
 // This function sets up UART0 to be used for a console to display information
@@ -83,23 +85,25 @@ void SysTickIntHandler(void) {
         GPIOPinWrite(GPIO_PORTF_BASE, LED_GREEN, led_color);
         if (tick_count % 32 == 0) {
             tick_count = 0;
-            command[0] = SB1602_COMMAND_SINGLE;
-            command[1] = 0x80 | 0x04;
-            writeDataI2C(I2C3_BASE, SB1602_SLAVE_ADDRESS, command, 2);
-            if (face == 0) {
-                writeDataI2C(I2C3_BASE, SB1602_SLAVE_ADDRESS, face1, 8);
-            } else {
-                writeDataI2C(I2C3_BASE, SB1602_SLAVE_ADDRESS, face2, 8);
-            }
-            command[0] = SB1602_COMMAND_SINGLE;
-            command[1] = 0x80 | 0x45;
-            writeDataI2C(I2C3_BASE, SB1602_SLAVE_ADDRESS, command, 2);
-            if (face == 0) {
-                writeDataI2C(I2C3_BASE, SB1602_SLAVE_ADDRESS, msg1, 7);
-            } else {
-                writeDataI2C(I2C3_BASE, SB1602_SLAVE_ADDRESS, msg2, 7);
-            }
-            face = 1 - face;
+//            command[0] = SB1602_COMMAND_SINGLE;
+//            command[1] = 0x80 | 0x04;
+//            writeDataI2C(I2C3_BASE, SB1602_SLAVE_ADDRESS, command, 2);
+//            if (face == 0) {
+//                writeDataI2C(I2C3_BASE, SB1602_SLAVE_ADDRESS, face1, 8);
+//            } else {
+//                writeDataI2C(I2C3_BASE, SB1602_SLAVE_ADDRESS, face2, 8);
+//            }
+//            command[0] = SB1602_COMMAND_SINGLE;
+//            command[1] = 0x80 | 0x45;
+//            writeDataI2C(I2C3_BASE, SB1602_SLAVE_ADDRESS, command, 2);
+//            if (face == 0) {
+//                writeDataI2C(I2C3_BASE, SB1602_SLAVE_ADDRESS, msg1, 7);
+//            } else {
+//                writeDataI2C(I2C3_BASE, SB1602_SLAVE_ADDRESS, msg2, 7);
+//            }
+//            face = 1 - face;
+            setAddressLCD(0,0);
+            writeTextLCD(msg_hello,5);
         }
     }
     tick_count++;

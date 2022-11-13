@@ -32,14 +32,14 @@ void initLCD(void);
 //*****************************************************************************
 // command LCD
 //*****************************************************************************
-inline void commandLCD(uint8_t cmd);
+extern inline void commandLCD(uint8_t cmd);
 //*****************************************************************************
 // set address LCD
 //*****************************************************************************
-inline void setAddressLCD(uint8_t x, uint8_t y);
+extern inline void setAddressLCD(uint8_t x, uint8_t y);
 //*****************************************************************************
 // write text LCD
 //*****************************************************************************
-inline void writeTextLCD(uint8_t *text, uint8_t length);
+extern inline void writeTextLCD(uint8_t *text, uint8_t length);
 
 #endif /* LCD_SB1602_H_ */
