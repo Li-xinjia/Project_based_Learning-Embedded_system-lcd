@@ -18,9 +18,9 @@ void initLCD(void) {
     delay_ms(40);//40ms
     writeDataI2C(I2C3_BASE, SB1602_SLAVE_ADDRESS, lcd_init_data1, 7);
     delay_ms(210);//210ms
-    writeDataI2C(I2C3_BASE, SB1602_SLAVE_ADDRESS, lcd_init_data2, 3);
+    writeDataI2C(I2C3_BASE, SB1602_SLAVE_ADDRESS, lcd_init_data2, 4);
     delay_ms(20);//20ms
-    writeDataI2C(I2C3_BASE, SB1602_SLAVE_ADDRESS, lcd_init_data3, 2);
+    writeDataI2C(I2C3_BASE, SB1602_SLAVE_ADDRESS, lcd_init_data3, 3);
     delay_ms(20);//20ms
 }
 
@@ -69,3 +69,15 @@ inline void clearLCD(void) {
     writeDataI2C(I2C3_BASE, SB1602_SLAVE_ADDRESS, command, 2);
 }
 
+inline void showIcon(uint8_t address, uint8_t bit) {
+    uint8_t data1[] = {SB1602_COMMAND_SINGLE, 0x39};
+    uint8_t data2[] = {SB1602_COMMAND_SINGLE, 0x40 | (0x0F & address)};
+    uint8_t data3[] = {SB1602_DATA_SINGLE, 0x1F & bit};
+
+    writeDataI2C(I2C3_BASE, SB1602_SLAVE_ADDRESS, data1, 2);
+    delay_ms(1);
+    writeDataI2C(I2C3_BASE, SB1602_SLAVE_ADDRESS, data2, 2);
+    delay_ms(1);
+    writeDataI2C(I2C3_BASE, SB1602_SLAVE_ADDRESS, data3, 2);
+    delay_ms(1);
+}

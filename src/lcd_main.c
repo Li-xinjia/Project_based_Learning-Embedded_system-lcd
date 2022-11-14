@@ -126,27 +126,27 @@ void SysTickIntHandler(void) {
         }
     }
 
-    if (!stop) {
-        count++;
-        int p;
-
-        for (int i = 0; i < 3; ++i) {
-            p = power(60, 2 - i);
-            buff = count / p;
-            if (buff == 0) {
-                setAddressLCD(4 + i * 3, 1);
-                uint8_t buff_c[] = {'0', '0'};
-                writeTextLCD(buff_c, 2);
-                continue;
-            }
-            if (buff >= 60) {
-                buff = buff % 60;
-            }
-            setAddressLCD(4 + i * 3, 1);
-            uint8_t buff_c[] = {buff / 10 + 48, buff % 10 + 48};
-            writeTextLCD(buff_c, 2);
-        }
-    }
+//    if (!stop) {
+//        count++;
+//        int p;
+//
+//        for (int i = 0; i < 3; ++i) {
+//            p = power(60, 2 - i);
+//            buff = count / p;
+//            if (buff == 0) {
+//                setAddressLCD(4 + i * 3, 1);
+//                uint8_t buff_c[] = {'0', '0'};
+//                writeTextLCD(buff_c, 2);
+//                continue;
+//            }
+//            if (buff >= 60) {
+//                buff = buff % 60;
+//            }
+//            setAddressLCD(4 + i * 3, 1);
+//            uint8_t buff_c[] = {buff / 10 + 48, buff % 10 + 48};
+//            writeTextLCD(buff_c, 2);
+//        }
+//    }
     tick_count++;
 }
 
@@ -155,6 +155,8 @@ void SW1PinIntHandler(void) {
     GPIOIntClear(GPIO_PORTF_BASE, INT_LEFT_BUTTON);
 
     stop = !stop;
+
+    showIcon(0x00,0x10);
 
     UARTprintf("SW1 pushed\n");
     GPIOIntEnable(GPIO_PORTF_BASE, INT_LEFT_BUTTON);
