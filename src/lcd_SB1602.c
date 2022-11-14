@@ -75,9 +75,6 @@ inline void showIcon(uint8_t address, uint8_t bit) {
     uint8_t data3[] = {SB1602_DATA_SINGLE, 0x1F & bit};
 
     writeDataI2C(I2C3_BASE, SB1602_SLAVE_ADDRESS, data1, 2);
-    delay_ms(1);
     writeDataI2C(I2C3_BASE, SB1602_SLAVE_ADDRESS, data2, 2);
-    delay_ms(1);
     writeDataI2C(I2C3_BASE, SB1602_SLAVE_ADDRESS, data3, 2);
-    delay_ms(1);
 }
